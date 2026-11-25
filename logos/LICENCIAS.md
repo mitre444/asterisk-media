@@ -10,5 +10,9 @@ Logos aportados por Mitre. Se usan solo para identificar a la empresa de la que 
 | mcdonalds.png, mcdonalds_texto.png | Archivos que bajó Mitre; fondo blanco quitado por Claude | mcdonalds_texto es de baja resolución (234 px): no usar grande |
 | coca-cola.png, coca-cola_circulo.png, pepsi.png, pepsi_globo.png, monster.png, oxxo.png, tiendas-3b.png, target.png, amazon.png, starbucks.png, smart-fit.png | Imágenes de búsqueda (no de sala de prensa); fondo blanco quitado por Claude | Cambiar por la versión oficial cuando se pueda |
 
-Pendientes (los archivos venían recortados): Cinemark, Walmart, Red Bull y uno más que también parece de Walmart.
+| cinemark.png | SVG que bajó Mitre, pasado a PNG transparente | |
+| walmart_chispa.png, mcdonalds_rojo.png, coca-cola_rojo.png | Imágenes de búsqueda, con su fondo de color (cuadro) | coca-cola_rojo sirve directo para el toldo |
+| amazon_a.png | Imagen de búsqueda; fondo blanco quitado | Ícono "a" con sonrisa |
+
+Pendientes: Walmart con su nombre (solo está la chispa) y Red Bull.
 Uso en el motor: `logo="/home/claude/asterisk-media/logos/<archivo>.png"` en las utilerías `store` y `fridge`.
