@@ -1,0 +1,67 @@
+"""012 · GTA 6, the night before: how much is one game worth? — English (With an Asterisk). Engine v2.
+Patterns (doc 03): P4 news of the week, P2 big number in frame 1. Rule: no unofficial pre-order or price figures."""
+SRC_8K = "Take-Two Q2 FY2027 results (8-K), Nov. 9, 2026"
+SRC_CALL = "Take-Two Q2 FY2027 earnings call, Nov. 9, 2026"
+SPEC = dict(
+    id="012_gta6_vispera", lang="en-us", lang_tag="EN", voice="af_heart", speed=1.0,
+    brand="WITH AN ASTERISK", theme="vice", hook_timer=True,
+    camera=dict(push=0.04, enter=0.10, punch=["not", "c1", "c2", "c3", "go", "big", "grow", "last", "stamp", "sub", "rev", "count", "badge", "ans", "fol", "like"],
+                shake=["not", "big", "cut", "stamp", "ans"]),
+    music=dict(bpm=96, cut="cut", riser_scenes=["reveal2"], gain=0.20, duck=0.55),
+    sfx=[],
+    beats=[
+        dict(scene="box_hook", src=SRC_8K + " · our math",
+             p=dict(kicker="GTA 6 · TOMORROW", q1="GTA 6 COMES OUT TOMORROW.", q2="$1.7 BILLION", q3="IN 3 MONTHS?",
+                    sales="FROM ONE GAME?", stamp="ONE GAME?", item="case"),
+             lines=["{G.T.A. Six|GTA 6} comes out tomorrow.",
+                    "Could [#not] one game bring in up to {one point seven billion dollars|$1.7 billion} extra in three months?"]),
+        dict(scene="consoles", src=SRC_8K,
+             p=dict(kicker="TOMORROW · NOV. 19", years=["NOV. 19", "NOV. 19", "NOV. 19"],
+                    subs=["PLAYSTATION 5", "XBOX SERIES X", "XBOX SERIES S"], foot="LAUNCH DAY"),
+             lines=["[#c1] {November nineteenth.|Nov. 19.} [#c2] PlayStation Five, [#c3] Xbox Series X and S."]),
+        dict(scene="steps", src=SRC_8K + " · " + SRC_CALL,
+             p=dict(kicker="TAKE-TWO NET BOOKINGS · JUL.–SEP.", items=[("2025", 1.96), ("2026", 1.60)],
+                    fmt="${:.2f}B", badge="−18%", gap=0.42),
+             lines=["The company behind it, Take-Two, looked shaky before the launch.",
+                    "[#go] Last quarter, its sales [#big] fell {eighteen percent|18%} to {one point six billion dollars,|$1.6 billion,}",
+                    "below its own forecast."]),
+        dict(scene="bars2", src=SRC_8K + " · " + SRC_CALL,
+             p=dict(kicker="FOLLOW THE MONEY · OCT.–DEC.", v1=1.76, v2=3.5, fmt="${:.2f}B", labels=["2025", "2026"],
+                    labels2=["ACTUAL", "FORECAST: $3.35–3.5B"], badge="ALMOST 2X"),
+             lines=["For October through December, [#grow] it now forecasts {three point three five to three point five billion.|$3.35 to $3.5 billion.}",
+                    "[#last] A year ago, that same quarter was {one point seven six billion.|$1.76 billion.}"]),
+        dict(scene="interrupt", src="",
+             p=dict(lines=["SO HOW MANY", "PRE-ORDERS?"], hot=[1], ys=[700, 860]),
+             lines=[dict(text="[#cut] So how many copies has {G.T.A. Six|GTA 6} pre-sold?", pause=0.4)]),
+        dict(scene="classified", src=SRC_8K + " · " + SRC_CALL,
+             p=dict(kicker="PRE-ORDERS", doc="PRE-ORDER COUNT", stamp="NOT DISCLOSED", quote="“AREN'T READY TO DECLARE VICTORY”",
+                    attr="TAKE-TWO CEO, NOV. 9, 2026"),
+             lines=["[#stamp] Take-Two won't say.",
+                    "Its {C.E.O.|CEO} only says pre-orders are at unprecedented levels,",
+                    "[#sub] and that they aren't ready to declare victory."]),
+        dict(scene="reveal2", src=SRC_CALL,
+             p=dict(title="THE ASTERISK", qlines=["THE BAR", "IS HUGE."], hot=[1]),
+             lines=["[#rev] Here's the asterisk. [#quote] The bar is huge."]),
+        dict(scene="tower", src=SRC_CALL,
+             p=dict(kicker="GTA V · COPIES SOLD", pre="NEARLY", value=235, sub="COPIES · 13 YEARS AFTER LAUNCH",
+                    badge="THE BAR FOR GTA 6", land=1.7),
+             lines=["[#count] {G.T.A. Five|GTA 5} has sold nearly {two hundred thirty-five million|235 million} copies,",
+                    "[#badge] thirteen years after it came out."]),
+        dict(scene="answer_cta", src="Our read, based on Take-Two's forecast", src_color=(255, 210, 63),
+             p=dict(kicker="THE ANSWER", ask="$1.7 BILLION FROM ONE GAME?", icon="case", tag="OUR READ",
+                    ans1="+$1.6–1.7B. MOSTLY", ans2="GTA 6.", follow="+ FOLLOW",
+                    follow_sub="When the real numbers drop, we break them down", like_txt="LIKE IF YOU'RE PLAYING TOMORROW"),
+             lines=["[#ask] So, $1.7 billion from one game? Our read: the jump is about {one point six to one point seven billion dollars|$1.6 to $1.7 billion} in a single quarter,",
+                    "[#ans] and most of it should be {G.T.A. Six|GTA 6}. Take-Two doesn't break it out yet.",
+                    "[#fol] When the real numbers drop, we break them down. Follow so you don't miss it,",
+                    "[#like] and like if you're playing tomorrow."]),
+    ],
+    post=dict(
+        tiktok=("GTA 6 comes out tomorrow. Could one game bring in up to $1.7 billion extra in three months?\n\n"
+                "Sources: Take-Two Q2 FY2027 results (8-K, Nov. 9, 2026); Take-Two Q2 FY2027 earnings call (Nov. 9, 2026). "
+                "\"Sales\" means net bookings. The \"almost 2x\" and the $1.6–1.7B jump are our own math; how much of it is GTA 6 is our read, "
+                "Take-Two doesn't break it out. Take-Two hasn't disclosed pre-order numbers. Not investment advice.\n\n"
+                "#gta6 #gta #business #money #videogames"),
+        title="GTA 6: $1.7 billion in 3 months?",
+    ),
+)
