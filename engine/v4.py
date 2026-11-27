@@ -599,6 +599,68 @@ def _arrow(d, x0, y0, x1, y1, col, wdt=12):
     d.polygon(pts, fill=col)
 
 
+
+
+# ---------------- fondo con imagen (27 nov. 2026: escenas ilustradas con IA) ----------------
+_BGI = {}
+_GRAD = None
+
+
+def _bgimg(path):
+    if path not in _BGI:
+        im = Image.open(path).convert("RGB")
+        r = max(W / im.width, H / im.height)
+        im = im.resize((int(im.width * r + 0.5), int(im.height * r + 0.5)), Image.LANCZOS)
+        l, tp = (im.width - W) // 2, (im.height - H) // 2
+        _BGI[path] = im.crop((l, tp, l + W, tp + H))
+    return _BGI[path]
+
+
+def _grad(top_k=1.0, bot_k=1.0):
+    global _GRAD
+    _GRAD = _GRAD or {}
+    key = (round(top_k, 2), round(bot_k, 2))
+    if key not in _GRAD:
+        a = np.zeros((H, 1), dtype=np.float32)
+        top, bot = 760, 560
+        a[:top, 0] = np.linspace(205, 0, top) * top_k
+        a[H - bot:, 0] = np.linspace(0, 150, bot) * bot_k
+        a = np.clip(a, 0, 235)
+        _GRAD[key] = Image.fromarray(np.repeat(a, W, axis=1).astype("uint8"), "L")
+    return _GRAD[key]
+
+
+def draw_bg(fr, t, sc, bgs):
+    """bgs: lista de dict(src, cue=None, z=(1.0, 1.12), c0=(0.5, 0.5), c1=(0.5, 0.5)). Cámara lenta (Ken Burns)."""
+    act, t_act, nxt = None, None, sc.t1
+    for i, b in enumerate(bgs):
+        tb = sc.t0 if (i == 0 or b.get("cue") is None) else _cue(sc, b.get("cue"), sc.t0)
+        if t >= tb - 1e-6:
+            act, t_act = b, tb
+            nxt = sc.t1
+            for b2 in bgs[i + 1:]:
+                nxt = _cue(sc, b2.get("cue"), sc.t1)
+                break
+    if act is None:
+        return
+    im = _bgimg(act["src"])
+    u = clamp((t - t_act) / max(0.5, nxt - t_act))
+    z0, z1 = act.get("z", (1.0, 1.12))
+    z = lerp(z0, z1, ease_io(u))
+    c0, c1 = act.get("c0", (0.5, 0.5)), act.get("c1", act.get("c0", (0.5, 0.5)))
+    cx, cy = lerp(c0[0], c1[0], u), lerp(c0[1], c1[1], u)
+    cw, ch = W / z, H / z
+    x0 = min(max(cx * W - cw / 2, 0), W - cw)
+    y0 = min(max(cy * H - ch / 2, 0), H - ch)
+    crop = im.resize((W, H), Image.BILINEAR, box=(x0, y0, x0 + cw, y0 + ch))
+    k = t - t_act
+    if k < 0.14 and t_act > 0.01:                       # destello corto en el corte
+        crop = Image.blend(crop, Image.new("RGB", (W, H), (255, 255, 255)), 0.55 * (1 - k / 0.14))
+    fr.im.paste(crop, (0, 0))
+    fr.im.paste(Image.new("RGB", (W, H), (12, 10, 20)), (0, 0), _grad(*act.get("shade", (1.0, 1.0))))
+    fr.d = ImageDraw.Draw(fr.im)
+    fr.cam = (x0, y0, z)
+
 # ---------------- escena genérica ----------------
 def _cue(sc, c, default):
     if c is None:
@@ -627,7 +689,10 @@ def draw_prop(fr, t, sc, pr):
                 return
     kind = pr["kind"]
     x, y, s = pr.get("x", W / 2), pr.get("y", 1150), pr.get("s", 1.0)
-    bob = 0 if pr.get("still") else 5 * math.sin(t * 1.7 + x * 0.01)
+    if pr.get("pin") and getattr(fr, "cam", None):          # pegado a la imagen: sigue a la cámara
+        cx0, cy0, cz = fr.cam
+        x, y, s = (x - cx0) * cz, (y - cy0) * cz, s * cz
+    bob = 0 if (pr.get("still") or pr.get("pin")) else 5 * math.sin(t * 1.7 + x * 0.01)
     u = bounce(k, pr.get("dur", 0.34))
     if kind == "stamp":
         sl = max(0.0, 1 - k / 0.18)
@@ -645,7 +710,15 @@ def draw_prop(fr, t, sc, pr):
         g.text((spr.width / 2, spr.height / 2), txt, font=f, fill=pr.get("col", RED4) + (255,), anchor="mm")
         fr.paste(_scaled(spr, 0.8 + 0.2 * u), x, y + bob * 0.4, a * min(1, k / 0.1))
         if pr.get("label"):
-            text(fr.d, (x, y + f.size * 0.72), pr["label"], fit(pr["label"], BOLD, 40 * s, 900), mix(CREAM, a * min(1, k / 0.3), BG4))
+            lc = pr.get("label_col")
+            text(fr.d, (x, y + f.size * 0.72), pr["label"], fit(pr["label"], BOLD, pr.get("label_size", 40) * s, 900),
+                 lc if lc else mix(CREAM, a * min(1, k / 0.3), BG4))
+        return
+    if kind == "logo":
+        spr = _logo(pr["src"], pr.get("w", 300), pr.get("h", 300))
+        if spr is None:
+            return
+        fr.paste(_scaled(spr, 0.6 + 0.4 * u), x, y + bob * 0.3, a * min(1, k / 0.08))
         return
     if kind == "jar":
         jar(fr, x, y + bob * 0.5, pr.get("level", 0.6), t, a)
@@ -746,6 +819,8 @@ def draw_prop(fr, t, sc, pr):
 def v4(fr, t, sc):
     cfg = fr.cfg
     p = sc.p
+    if p.get("bg"):
+        draw_bg(fr, t, sc, p["bg"] if isinstance(p["bg"], list) else [dict(src=p["bg"])])
     header(fr, cfg.get("series", ""), cfg.get("ep", ""))
     top = 430 if p.get("chapter") else 340
     if p.get("chapter"):
