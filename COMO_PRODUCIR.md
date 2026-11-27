@@ -2,10 +2,11 @@
 
 Las reglas que mandan están en el proyecto de claude.ai "With an Asterisk · Canal": **«00 · LEER PRIMERO»** (roles, permisos, presupuesto, flujo) y **«01 · Reglas del video»** (formato y estilo). Este archivo solo explica la parte técnica. Si algo aquí choca con esos docs, ganan los docs.
 
-## Quién hace qué
-1. **8:17 · tarea "producción: guion"**: escribe `guiones/<NNN>_<empresa>_<tema>/guion.md` + `libro_de_afirmaciones.md`, lo sube y se lo manda a Mitre. No renderiza ni genera imágenes.
-2. **Chat de control, después del sí de Mitre al guion**: imágenes (banco o nuevas dentro del tope semanal) → `es.py` / `en.py` → vista previa → render → subir → borrador en Metricool → mandarle los dos MP4 a Mitre en el chat (SendUserFile, display render).
-3. **Ok final de Mitre** → el chat pasa los borradores a `draft: false`.
+## Quién hace qué (un chat por día)
+1. **8:17 · tarea "producción: guion"**: escribe `guiones/<NNN>_<empresa>_<tema>/guion.md` + `libro_de_afirmaciones.md`, lo sube y se lo manda a Mitre. Al correr no renderiza ni genera imágenes.
+2. **Mitre contesta en esa misma sesión** (es el chat de control del día). Con su sí al guion, esa sesión produce: imágenes (banco o nuevas dentro del tope semanal) → `es.py` / `en.py` → vista previa → render → subir → borrador en Metricool → le manda los dos MP4 en la conversación (SendUserFile, display render).
+3. **Ok final de Mitre** en esa sesión → los borradores pasan a `draft: false`.
+4. Fuera de esa sesión, solo un chat nuevo donde Mitre escribió "chat de control", que antes revisa «02 · Estado de hoy» y `getScheduledPosts`.
 
 ## 1. Instalar (3–5 min)
 ```bash
